@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcular Numero Destino</title>
+    <link rel="stylesheet" href="./css/estilo.css">
+    <link rel="shortcut icon" href="img/R.jpg" type="image/x-icon">
+</head>
+
+<body>
+    <!--Calcular el número de Destino. Se calcula sumando los dígitos de la fecha completa de nacimiento (día, mes y año) hasta obtener un solo dígito (o un número maestro como 11, 22)-->
+    <p>
+        <img src="./img/R.jpg" alt="foto">
+    </p>
+    <h1>Numerología</h1>
+    <div>
+        <label for="nombre">Nombre completo:</label>
+        <input type="text" id="nombre" placeholder="Nombre" required />
+        <input type="text" id="apellidos" placeholder="Apellidos" required />
+    </div>
+    <br />
+
+    <div class="container">
+        <label for="fechaNac">Fecha de nacimiento:</label>
+        <input id="fechaNac" type="date" required>
+        <button type="button" onclick="calcularNumeroDestino()">Calcular</button>
+        <button type="button" onclick="mostrarSignificado()" class="diseño">(significado)</button>
+        <span id="resultado"></span>
+        <span id="significado"></span>
+    </div>
+
+    <script>
+        let ultimoNumeroDestino = null;
+        let ultimoSignificado = null;
+
+        function limpiarFecha(fechaString) { //limpia la fecha de . / -
+            let numero = '0123456789';
+            let fechaNumero = '';
+            for (let i = 0; i < fechaString.length; i++) {
+                if (numero.includes(fechaString[i])) {
+                    fechaNumero += fechaString[i];
+                }
+            }
+            return parseInt(fechaNumero);
+        }
+
+        function reduccionMaestro(numero) {
+            let numeroReducido = numero;
+            const maestros = [11, 22];
+
+            while (numeroReducido > 9 && !maestros.includes(numeroReducido)) {
+                let suma = 0;
+                let digitos = numeroReducido.toString().split('');
+                for (let i = 0; i < digitos.length; i++) {
+                    suma += parseInt(digitos[i]);
+                }
+                numeroReducido = suma;
+            }
+
+            return numeroReducido;
+        }
+
+        function calcularNumeroDestino() {
+            const FECHANAC = document.getElementById('fechaNac');
+            const fechaNacimiento = new Date(FECHANAC.value);
+
+            if (isNaN(fechaNacimiento.getTime())) {
+                document.getElementById('resultado').innerHTML = 'Por favor, introduce una fecha válida.';
+                document.getElementById('explicacion').innerHTML = '';
+                ultimoNumeroDestino = null;
+                ultimoSignificado = null;
+                return;
+            }
+            let fechaNumerica = `${fechaNacimiento.getFullYear()}${fechaNacimiento.getMonth() + 1}${fechaNacimiento.getDate()}`;
+            let fechaNum = limpiarFecha(fechaNumerica);
+            const numeroDestino = reduccionMaestro(fechaNum);
+
+            const significados = [
+                { numero: 1, significado: 'Liderazgo, independencia, iniciativa.' },
+                { numero: 2, significado: 'Diplomacia, cooperación, sensibilidad.' },
+                { numero: 3, significado: 'Creatividad, expresión, alegría.' },
+                { numero: 4, significado: 'Estabilidad, trabajo duro, organización.' },
+                { numero: 5, significado: 'Aventura, libertad, versatilidad.' },
+                { numero: 6, significado: 'Armonía, responsabilidad, servicio.' },
+                { numero: 7, significado: 'Intuición, análisis, espiritualidad.' },
+                { numero: 8, significado: 'Ambición, éxito material, poder.' },
+                { numero: 9, significado: 'Humanitarismo, compasión, sabiduría.' },
+                { numero: 11, significado: 'Inspiración, idealismo, creatividad y expresión. Sanadores y motivadores.' },
+                { numero: 22, significado: 'Visionario/a para transformar el mundo. Construcción, manifestación, pragmatismo.' }
+            ];
+
+            const info = significados.find(item => item.numero === numeroDestino);
+
+            ultimoNumeroDestino = numeroDestino;
+            ultimoSignificado = info ? info.significado : null;
+
+            document.getElementById('resultado').innerHTML = `<span style="color: red; font-size: 20px;">${numeroDestino}. Número personal</span>`;
+            document.getElementById('significado').innerHTML = '';
+        }
+
+        function mostrarSignificado() {
+            if (!ultimoNumeroDestino) {
+                alert('Primero debes calcular tu número personal.');
+                return;
+            }
+
+            if (ultimoSignificado) {
+                document.getElementById('significado').innerHTML = `<span style="color: blue; font-size: 14px;">Significado: ${ultimoSignificado}</span>`;
+            } else {
+                document.getElementById('significado').innerHTML = 'No hay significado disponible para este número.';
+            }
+
+            console.log("Número destino:", ultimoNumeroDestino);
+            console.log("Significado:", ultimoSignificado || "No hay significado disponible.");
+        }
+    </script>
+
+
+</body>
+
+</html>
